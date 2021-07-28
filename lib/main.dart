@@ -28,7 +28,7 @@ class MainScreen extends StatelessWidget {
 class MyGame extends BaseGame {
   static final squarePaint = BasicPalette.black.paint..strokeWidth = 1;
   Offset positionOrigin1 = Offset(150, 200);
-  double G = 0.098 * 5;
+  double G = 0.098 * 2.5;
   Offset positionBob1 = Offset(0, 100);
   double angle1 = pi / 2;
   double len1 = 90;
