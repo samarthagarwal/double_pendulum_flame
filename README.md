@@ -11,9 +11,5 @@ A simple Flutter experiment using Flame simulating a Double Pendulum system.
 
 #### Demo
 
-```
 [![Demo](./screenshots/demo.gif)](https://www.youtube.com/watch?v=WYNslEgiUUk)
-```
-
- 
 
