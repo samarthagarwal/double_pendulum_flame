@@ -19,6 +19,10 @@ class MainScreen extends StatelessWidget {
       ),
       home: Scaffold(
         backgroundColor: Colors.red,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Text("Double Pendulum"),
+        ),
         body: MyGame().widget,
       ),
     );
@@ -26,12 +30,16 @@ class MainScreen extends StatelessWidget {
 }
 
 class MyGame extends BaseGame {
-  static final squarePaint = BasicPalette.black.paint..strokeWidth = 1;
+  static final threadPaint = BasicPalette.black.paint..strokeWidth = 1;
+  static final bobPaint = Paint()
+    ..color = Colors.red
+    ..style = PaintingStyle.fill;
+  static final trailPaint = BasicPalette.black.paint..strokeWidth = 0.5;
   Offset positionOrigin1 = Offset(150, 200);
-  double G = 0.098 * 2.5;
+  double G = 0.98;
   Offset positionBob1 = Offset(0, 100);
   double angle1 = pi / 2;
-  double len1 = 90;
+  double len1 = 100;
   double mass1 = 1;
   double velocity1 = 0.0;
   double acceleration1 = 0.0;
@@ -40,15 +48,18 @@ class MyGame extends BaseGame {
   Offset positionBob2;
   Offset positionBob2Old;
   double angle2 = pi / 2;
-  double len2 = 90;
-  double mass2 = 1;
+  double len2 = 100;
+  double mass2 = 5;
   double velocity2 = 0.0;
   double acceleration2 = 0.0;
 
-  List<Offset> trail = [];
+  List<Offset> trail1 = [];
+  List<Offset> trail2 = [];
 
   MyGame() {
-    positionOrigin1 = Offset(MediaQueryData.fromWindow(window).size.width / 2, 200);
+    double minimumDimension = min(MediaQueryData.fromWindow(window).size.width, MediaQueryData.fromWindow(window).size.height);
+    len1 = len2 = (minimumDimension / 4) - 50;
+    positionOrigin1 = Offset(MediaQueryData.fromWindow(window).size.width / 2, MediaQueryData.fromWindow(window).size.height / 2);
   }
 
   @override
@@ -76,6 +87,10 @@ class MyGame extends BaseGame {
     positionBob1 = Offset(positionOrigin1.dx + len1 * sin(angle1), positionOrigin1.dy + len1 * cos(angle1));
     positionOrigin2 = positionBob1;
     positionBob2 = Offset(positionOrigin2.dx + len2 * sin(angle2), positionOrigin2.dy + len2 * cos(angle2));
+
+    // Adding damping
+    velocity1 *= 0.999;
+    velocity2 *= 0.999;
   }
 
   @override
@@ -87,15 +102,19 @@ class MyGame extends BaseGame {
     bgPaint.color = Colors.white;
     canvas.drawRect(bgRect, bgPaint);
 
-    canvas.drawLine(positionOrigin1, positionBob1, squarePaint);
-    canvas.drawCircle(positionBob1, 10 * mass1, squarePaint);
+    canvas.drawLine(positionOrigin1, positionBob1, threadPaint);
+    canvas.drawCircle(positionBob1, 10 * mass1, bobPaint);
 
-    canvas.drawLine(positionOrigin2, positionBob2, squarePaint);
-    canvas.drawCircle(positionBob2, 10 * mass2, squarePaint);
+    if (positionBob2 != null) {
+      canvas.drawLine(positionOrigin2, positionBob2, threadPaint);
+      canvas.drawCircle(positionBob2, 10 * mass2, bobPaint);
+    }
 
     if (positionBob2Old != null) {
-      trail.add(positionBob2Old);
-      canvas.drawPoints(PointMode.polygon, trail, squarePaint);
+      // trail1.add(positionBob1);
+      // canvas.drawPoints(PointMode.polygon, trail1, bobPaint);
+      trail2.add(positionBob2Old);
+      canvas.drawPoints(PointMode.polygon, trail2, trailPaint);
     }
 
     positionBob2Old = positionBob2;
